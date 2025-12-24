@@ -1,11 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { joinWaitlist } from '@/app/actions';
 
 const Waitlist = () => {
     const [users, setUsers] = useState(124);
-  
-    
+    const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!email) return;
+
+        setIsLoading(true);
+        setStatus(null);
+
+        const result = await joinWaitlist(email);
+
+        if (result.error) {
+            setStatus({ type: 'error', message: result.error });
+        } else {
+            setStatus({ type: 'success', message: 'You are on the list! We will be in touch.' });
+            setEmail('');
+        }
+        setIsLoading(false);
+    };
+
     return (
         <section className="relative min-h-screen w-full flex flex-col items-center justify-center bg-[#FFFBF2] overflow-hidden px-4 font-sans text-[#1A1A1A]">
 
@@ -39,21 +60,37 @@ const Waitlist = () => {
 
                 {/* Compact Email Capture Section */}
                 <div className="w-full max-w-[440px] group transition-all duration-500">
-                    <div className="relative flex items-center bg-white rounded-lg p-1 pl-3 border border-neutral-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.04)] transition-all duration-300 group-focus-within:border-orange-200 group-focus-within:shadow-[0_20px_50px_-10px_rgba(255,69,0,0.08)]">
+                    <form onSubmit={handleSubmit} className="relative flex items-center bg-white rounded-lg p-1 pl-3 border border-neutral-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.04)] transition-all duration-300 group-focus-within:border-orange-200 group-focus-within:shadow-[0_20px_50px_-10px_rgba(255,69,0,0.08)]">
                         <svg className="w-5 h-5 text-neutral-700 transition-colors group-focus-within:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                         <input
                             type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter your email"
+                            disabled={isLoading}
                             className="flex-1 bg-transparent border-none outline-none px-4 text-base text-neutral-700 placeholder:text-neutral-300 transition-all font-semibold"
                         />
-                        <button className="bg-[#0F172A] p-3 rounded-lg hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center">
-                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className={`bg-[#0F172A] p-3 rounded-lg hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center min-w-[48px] ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            {isLoading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            )}
                         </button>
-                    </div>
+                    </form>
+                    {status && (
+                        <p className={`mt-3 text-sm font-medium ${status.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                            {status.message}
+                        </p>
+                    )}
                 </div>
 
                 {/* Trust Indicator */}
