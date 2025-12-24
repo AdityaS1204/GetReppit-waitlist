@@ -24,3 +24,18 @@ export async function joinWaitlist(email: string) {
         return { error: 'An unexpected error occurred. Please try again.' }
     }
 }
+
+export async function getWaitlistCount() {
+    try {
+        const { count, error } = await supabase
+            .from('waitlist')
+            .select('*', { count: 'exact', head: true });
+
+        if (error) throw error;
+        return { count: count || 0 };
+    } catch (err) {
+        console.error('Error fetching count:', err);
+        return { count: 0 };
+    }
+}
+
