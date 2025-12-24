@@ -1,13 +1,26 @@
 'use client';
 
-import { useState } from 'react';
-import { joinWaitlist } from '@/app/actions';
+import { useState, useEffect } from 'react';
+import { joinWaitlist, getWaitlistCount } from '@/app/actions';
 
 const Waitlist = () => {
-    const [users, setUsers] = useState(124);
+    const [users, setUsers] = useState<number>(124);
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
+    useEffect(() => {
+        const fetchCount = async () => {
+            try {
+                const { count } = await getWaitlistCount();
+                // We add the database count to our base of 124
+                setUsers(124 + (count || 0));
+            } catch (err) {
+                console.error('Failed to fetch count:', err);
+            }
+        };
+        fetchCount();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,12 +36,15 @@ const Waitlist = () => {
         } else {
             setStatus({ type: 'success', message: 'You are on the list! We will be in touch.' });
             setEmail('');
+            // Increment the count locally for immediate feedback
+            setUsers(prev => prev + 1);
         }
         setIsLoading(false);
     };
 
+
     return (
-        <section className="relative min-h-screen w-full flex flex-col items-center justify-center bg-[#FFFBF2] overflow-hidden px-4 font-sans text-[#1A1A1A]">
+        <section className="relative min-h-screen w-full flex flex-col items-center bg-[#FFFBF2] overflow-hidden px-4 font-sans text-[#1A1A1A]">
 
             {/* Primary Radial Blur Gradient - Top Right */}
             <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-orange-500/20 blur-[140px] rounded-full pointer-events-none mix-blend-multiply animate-pulse" />
@@ -37,7 +53,7 @@ const Waitlist = () => {
             <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-orange-200/20 blur-[120px] rounded-full pointer-events-none" />
             <div className="absolute -top-96 -right-96 w-[48rem] h-[48rem] bg-orange-600 rounded-full blur-2xl opacity-60"></div>
             {/* Rectangular Centerpiece Card */}
-            <div className="relative z-10 w-full max-w-[720px] bg-white/40 backdrop-blur-3xl rounded-xl p-8 md:p-1 md:py-1 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.05)] border border-white/60 flex flex-col items-center text-center">
+            <div className="relative z-10 w-full max-w-[720px] bg-white/40 backdrop-blur-3xl rounded-xl p-8 md:p-1 md:py-1 shadow-[0_40px_100px_-20px_rgba(255,69,0,0.7)] border border-white/60 flex flex-col items-center text-center mt-22">
 
                 {/* Early Access Badge */}
                 <div className="inline-flex items-center gap-2.5 px-2 py-1.5 rounded-full bg-white shadow-[0_4px_12px_rgba(0,0,0,0.02)] border border-neutral-100/80 my-3 transition-transform hover:scale-105">
@@ -49,18 +65,18 @@ const Waitlist = () => {
                 </div>
 
                 {/* Master Heading - Wider Layout */}
-                <h1 className="text-[42px] md:text-[60px] leading-[1.05] font-[family-name:var(--font-instrument-serif)] text-[#1A1A1A] mb-4 tracking-[1px]">
-                    Redefine your <br /><span className="italic text-[#FF4500] font-normal">Reddit</span> presence.
+                <h1 className="text-lg md:text-6xl leading-[1.05] font-[family-name:var(--font-instrument-serif)] text-[#1A1A1A] mb-4 tracking-[1px]">
+                    Turn <span className="text-[#FF4500] font-normal italic">Reddit</span> conversations<br /> into SaaS leads
                 </h1>
 
                 {/* Engaging Description - More Horizontal */}
                 <p className="text-[16px] md:text-md text-neutral-600 font-semibold max-w-[440px] mb-8 leading-[1.5]">
-                    Find high-intent Reddit threads. Write safe comments. Turn conversations into SaaS leads.
+                    Find high-intent Reddit threads, write safe comments, and grow without getting banned.
                 </p>
 
                 {/* Compact Email Capture Section */}
                 <div className="w-full max-w-[440px] group transition-all duration-500">
-                    <form onSubmit={handleSubmit} className="relative flex items-center bg-white rounded-lg p-1 pl-3 border border-neutral-100 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.04)] transition-all duration-300 group-focus-within:border-orange-200 group-focus-within:shadow-[0_20px_50px_-10px_rgba(255,69,0,0.08)]">
+                    <form onSubmit={handleSubmit} className="relative flex items-center bg-white rounded-lg p-1 pl-3 border border-neutral-100 shadow-[0_15px_40px_-10px_rgba(15,15,15,0.2)] transition-all duration-300 group-focus-within:border-orange-200 group-focus-within:shadow-[0_20px_50px_-10px_rgba(255,69,0,0.08)]">
                         <svg className="w-5 h-5 text-neutral-700 transition-colors group-focus-within:text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
