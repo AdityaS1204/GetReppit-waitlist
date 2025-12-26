@@ -23,19 +23,19 @@ const HeroSection = () => {
                         <div className="w-6 h-6 rounded-full border-2 border-white bg-neutral-300" />
                         <div className="w-6 h-6 rounded-full border-2 border-white bg-neutral-400" />
                     </span>
-                    <p className="text-[13px] font-medium text-neutral-600 font-[family-name:var(--font-instrument-sans)]">
+                    <p className="text-[13px] font-medium text-neutral-600 font-instrument-sans">
                         Used by indie founders, SaaS builders, and growth teams
                     </p>
                 </div> */}
 
                 {/* Headline */}
-                <h1 className="text-5xl md:text-8xl font-normal leading-[1.05] tracking-tight text-[#1a1a1a] font-[family-name:var(--font-instrument-serif)]">
+                <h1 className="text-5xl md:text-8xl font-normal leading-[1.05] tracking-tight text-[#1a1a1a] font-instrument-serif">
                     Find high-intent<span className="text-[#FF4500] italic"> Reddit threads</span> <br className="hidden md:block" />
                         before your competitors do                   
                 </h1>
 
                 {/* Subheadline */}
-                <p className="max-w-2xl mx-auto text-lg md:text-xl text-neutral-600 leading-relaxed font-[family-name:var(--font-instrument-sans)] font-medium">
+                <p className="max-w-2xl mx-auto text-lg md:text-xl text-neutral-600 leading-relaxed font-instrument-sans font-medium">
                     Reppit scans Reddit in real time and surfaces threads where users are
                     actively looking for tools, alternatives, and solutions like yours.
                     You reply early. You win users.
@@ -45,7 +45,7 @@ const HeroSection = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
                     <Link
                         href="/waitlist"
-                        className="group relative px-8 py-4 bg-[#FF4500] text-white font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-95 text-lg font-[family-name:var(--font-instrument-sans)] shadow-[0_10px_30px_-10px_rgba(255,69,0,0.4)] hover:shadow-[0_20px_40px_-10px_rgba(255,69,0,0.5)]"
+                        className="group relative px-8 py-4 bg-[#FF4500] text-white font-bold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-95 text-lg font-instrument-sans shadow-[0_10px_30px_-10px_rgba(255,69,0,0.4)] hover:shadow-[0_20px_40px_-10px_rgba(255,69,0,0.5)]"
                     >
                         <span className="relative z-10 flex items-center gap-2">
                             Join the waitlist
@@ -53,7 +53,7 @@ const HeroSection = () => {
                         </span>
                     </Link>
 
-                    <button className="px-8 py-4 bg-white/80 backdrop-blur-sm border border-neutral-200 text-[#1a1a1a] font-semibold rounded-lg hover:bg-white transition-all text-lg font-[family-name:var(--font-instrument-sans)] shadow-sm hover:shadow-md active:scale-[0.98]">
+                    <button className="px-8 py-4 bg-white/80 backdrop-blur-sm border border-neutral-200 text-[#1a1a1a] font-semibold rounded-lg hover:bg-white transition-all text-lg font-instrument-sans shadow-sm hover:shadow-md active:scale-[0.98]">
                         See how it works
                     </button>
                 </div>
@@ -61,7 +61,7 @@ const HeroSection = () => {
 
             {/* Trust text footer */}
             <div className="absolute bottom-12 left-0 w-full text-center pointer-events-none">
-                <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-400 font-bold font-[family-name:var(--font-instrument-sans)]">
+                <p className="text-[11px] uppercase tracking-[0.25em] text-neutral-400 font-bold font-instrument-sans">
                     Stop manual Reddit hunting. Start Growing.
                 </p>
             </div>
