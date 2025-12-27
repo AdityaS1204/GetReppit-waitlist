@@ -15,7 +15,7 @@ const FeatureBreakdownSection = () => {
                 "Actively searching for tools"
             ],
             conclusion: "You only see threads worth replying to.",
-            image: "/buyer_intent.png",
+            image: "images/buyer_intent.png",
             imageAlt: "AI-powered buyer intent detection dashboard",
             reverse: false
         },
@@ -24,7 +24,7 @@ const FeatureBreakdownSection = () => {
             subtitle: "Speed matters on Reddit.",
             description: "GetReppit alerts you within minutes so you are among the first replies, not the fifteenth.",
             conclusion: "Early replies get visibility. Visibility gets clicks. Clicks get users.",
-            image: "/realtime_alerts.png",
+            image: "images/realtime_alerts.png",
             imageAlt: "Real-time notification alerts",
             reverse: true
         },
@@ -37,7 +37,7 @@ const FeatureBreakdownSection = () => {
                 "Suggested reply angles that do not sound spammy"
             ],
             conclusion: "You still write the reply. GetReppit gives you the advantage.",
-            image: "/smart_reply.png",
+            image: "images/smart_reply.png",
             imageAlt: "AI-powered smart reply suggestions",
             reverse: false
         },
@@ -46,7 +46,7 @@ const FeatureBreakdownSection = () => {
             subtitle: "Save threads. Track where you replied. See what converted.",
             description: "",
             conclusion: "No more guessing what worked last week.",
-            image: "/tracking.png",
+            image: "images/tracking.png",
             imageAlt: "Thread tracking and analytics dashboard",
             reverse: true
         }
