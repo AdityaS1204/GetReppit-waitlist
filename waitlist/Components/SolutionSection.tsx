@@ -91,7 +91,7 @@ const SolutionSection = () => {
                             <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_60px_-10px_rgba(0,0,0,0.3)] border border-neutral-200/50">
                                 <div className="relative aspect-[4/3] bg-neutral-900">
                                     <Image
-                                        src="/reddit_post_screenshot.png"
+                                        src="images/reddit_post_screenshot.png"
                                         alt="Reddit post showing high-intent buyer question"
                                         fill
                                         className="object-cover"
