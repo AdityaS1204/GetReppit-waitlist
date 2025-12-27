@@ -1,17 +1,31 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Logo from '@/Components/Logo';
+import { cn } from '@/lib/utils';
+import { DashboardState } from './dashboardState';
+import { getDashboardState } from './getDashboardState';
+import { ContextRequiredState } from './states/ContextRequiredState';
+import { ScanningState } from './states/ScanningState';
+import { NoThreadsState } from './states/NoThreadsState';
+import { RiskyThreadsState } from './states/RiskyThreadsState';
+import { ThreadsAvailableState } from './states/ThreadsAvailableState';
 
 export default function DashboardPage() {
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+
+    // Dashboard Data - In a real app, this would come from an API
+    const [dashboardData, setDashboardData] = useState({
+        contextCompleted: false, // Set to false to show onboarding
+        scanInProgress: false,
+        threads: [] as { isRisky: boolean }[]
+    });
 
     useEffect(() => {
         const checkUser = async () => {
@@ -61,6 +75,25 @@ export default function DashboardPage() {
         router.push('/login');
     };
 
+    const renderDashboardState = () => {
+        const state = getDashboardState(dashboardData);
+
+        switch (state) {
+            case DashboardState.CONTEXT_REQUIRED:
+                return <ContextRequiredState onComplete={() => setDashboardData({ ...dashboardData, contextCompleted: true })} />;
+            case DashboardState.SCANNING:
+                return <ScanningState />;
+            case DashboardState.NO_THREADS:
+                return <NoThreadsState />;
+            case DashboardState.THREADS_RISKY_ONLY:
+                return <RiskyThreadsState />;
+            case DashboardState.THREADS_AVAILABLE:
+                return <ThreadsAvailableState />;
+            default:
+                return null;
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-[#FFFBF2] flex items-center justify-center">
@@ -76,55 +109,65 @@ export default function DashboardPage() {
                 <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
                     <Logo />
 
-                    <button
-                        onClick={handleLogout}
-                        className="px-5 py-2.5 bg-black text-white rounded-xl text-sm font-medium hover:bg-neutral-800 transition-colors flex items-center gap-2"
-                    >
-                        Sign out
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                    </button>
+                    <div className="flex items-center gap-4">
+                        {/* Simulation Toggles (Internal Debug) */}
+                        <div className="hidden md:flex gap-1 p-1 bg-neutral-100 rounded-lg">
+                            <button
+                                onClick={() => setDashboardData({ ...dashboardData, contextCompleted: !dashboardData.contextCompleted })}
+                                className={cn("px-2 py-1 text-[10px] rounded", dashboardData.contextCompleted ? "bg-green-500 text-white" : "text-neutral-500")}
+                            >
+                                Context
+                            </button>
+                            <button
+                                onClick={() => setDashboardData({ ...dashboardData, scanInProgress: !dashboardData.scanInProgress })}
+                                className={cn("px-2 py-1 text-[10px] rounded", dashboardData.scanInProgress ? "bg-[#FF4500] text-white" : "text-neutral-500")}
+                            >
+                                Scan
+                            </button>
+                            <button
+                                onClick={() => setDashboardData({ ...dashboardData, threads: dashboardData.threads.length > 0 ? [] : [{ isRisky: false }, { isRisky: false }] })}
+                                className={cn("px-2 py-1 text-[10px] rounded", dashboardData.threads.length > 0 ? "bg-blue-500 text-white" : "text-neutral-500")}
+                            >
+                                Threads
+                            </button>
+                            <button
+                                onClick={() => setDashboardData({ ...dashboardData, threads: [{ isRisky: true }, { isRisky: true }] })}
+                                className={cn("px-2 py-1 text-[10px] rounded", dashboardData.threads.every(t => t.isRisky) && dashboardData.threads.length > 0 ? "bg-orange-500 text-white" : "text-neutral-500")}
+                            >
+                                Risky
+                            </button>
+                        </div>
+
+                        <button
+                            onClick={handleLogout}
+                            className="px-5 py-2.5 bg-black text-white rounded-xl text-sm font-medium hover:bg-neutral-800 transition-colors flex items-center gap-2"
+                        >
+                            Sign out
+                        </button>
+                    </div>
                 </div>
             </header>
 
             {/* Main Content */}
             <main className="pt-32 pb-20 px-6 md:px-12">
-                <div className="max-w-7xl mx-auto">
+                <div className="max-w-5xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                        className="flex flex-col items-center gap-12"
                     >
-                        {/* Welcome Card */}
-                        <div className="md:col-span-3 bg-white border border-black/5 rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] mb-4">
-                            <h1 className="text-4xl font-bold text-black font-[family-name:var(--font-instrument-serif)] mb-2">
-                                Welcome back, {user?.user_metadata?.full_name || user?.email?.split('@')[0]}
-                            </h1>
-                            <p className="text-neutral-500">You're logged in as {user?.email}</p>
-                        </div>
+                        {/* Welcome Card - Only show if context is done or specifically requested */}
+                        {dashboardData.contextCompleted && (
+                            <div className="w-full bg-white border border-black/5 rounded-[32px] p-8 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+                                <h1 className="text-4xl md:text-5xl font-bold text-black font-[family-name:var(--font-instrument-serif)] mb-2">
+                                    Welcome back, {user?.user_metadata?.full_name || user?.email?.split('@')[0]}
+                                </h1>
+                                <p className="text-neutral-500 text-lg">Here is what Reppit found for you today.</p>
+                            </div>
+                        )}
 
-                        {/* Stats Preview */}
-                        <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-                            <p className="text-neutral-400 text-sm mb-1 uppercase tracking-wider font-semibold">Active Posts</p>
-                            <h3 className="text-3xl font-bold">12</h3>
-                        </div>
-                        <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-                            <p className="text-neutral-400 text-sm mb-1 uppercase tracking-wider font-semibold">Total Karma</p>
-                            <h3 className="text-3xl font-bold">2.4k</h3>
-                        </div>
-                        <div className="bg-white border border-black/5 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-                            <p className="text-neutral-400 text-sm mb-1 uppercase tracking-wider font-semibold">Scheduled</p>
-                            <h3 className="text-3xl font-bold">5</h3>
-                        </div>
-
-                        {/* Placeholder Content */}
-                        <div className="md:col-span-2 bg-white border border-black/5 rounded-3xl h-64 flex items-center justify-center border-dashed">
-                            <p className="text-neutral-400">Post calendar placeholder</p>
-                        </div>
-                        <div className="bg-white border border-black/5 rounded-3xl h-64 flex items-center justify-center border-dashed">
-                            <p className="text-neutral-400">Analytics preview</p>
-                        </div>
+                        {/* State-Driven Dashboard Content */}
+                        {renderDashboardState()}
                     </motion.div>
                 </div>
             </main>
